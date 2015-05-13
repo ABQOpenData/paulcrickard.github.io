@@ -1,0 +1,63 @@
+<html>
+<head><title>Streaming Chart</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+<style>
+#map { height: 250px; }
+</style>
+</head>
+<body>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<script src="smoothie.js"></script>
+
+
+<canvas id="mycanvas" width="500" height="400"></canvas>
+<div id="map"></div>
+<div id="rawdata">trgtrg</div>
+
+<script>
+var raw=[];
+
+var map = L.map('map');
+
+
+
+var line1 = new TimeSeries();
+      
+window.addEventListener("devicemotion",function(e){
+ line1.append(new Date().getTime(), e.acceleration.z);   
+   console.log(e.acceleration.z);
+   raw.push(e.acceleration.z);
+   document.getElementById("rawdata").innerHTML=raw.join(",");
+if(e.acceleration.z>3|e.acceleration.z<-3){map.locate({setView: true, maxZoom: 16});}
+ 
+
+
+},true);
+     
+       
+     
+
+var smoothie = new SmoothieChart({millisPerPixel:70,maxValueScale:0.82,grid:{fillStyle:'rgba(192,192,192,0.15)',verticalSections:5},labels:{disabled:true,fillStyle:'#000000',fontSize:12,precision:0},timestampFormatter:SmoothieChart.timeFormatter,maxValue:100,minValue:-100});
+smoothie.addTimeSeries(line1, { lineWidth:5,strokeStyle:'#000000'});
+     
+smoothie.streamTo(document.getElementById("mycanvas"), 1000);
+
+function onLocationFound(e) {
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+
+    L.marker(e.latlng).addTo(map);
+        
+}
+
+map.on('locationfound', onLocationFound);
+
+//navigator.geolocation.getCurrentPosition(pos);
+
+//function pos(p){
+
+//alert(p.coords.latitude+","+p.coords.longitude);
+//}
+
+</script>
+</body>
+</html>
