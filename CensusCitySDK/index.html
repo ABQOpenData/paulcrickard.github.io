@@ -55,6 +55,19 @@ census.APIRequest(request, callback);
 
 
 
+
+var georequest={
+                 "lat": j.geometry.coordinates[1],
+                 "lng": j.geometry.coordinates[0],
+                "level": "tract"
+                };
+
+
+census.GEORequest(georequest, geocallback);
+
+
+
+
 });
 
 var callback=function(response){
@@ -62,6 +75,14 @@ var callback=function(response){
 	console.log(response);
 	alert("Population: "+response.data.population+"   Median Income Last 12 Months: "+response.data.B06011_003E);
 };
+
+
+var geocallback = function(response) {
+				L.geoJson(response).addTo(map);
+                            console.log(response);
+                        };
+
+
 
 
 
