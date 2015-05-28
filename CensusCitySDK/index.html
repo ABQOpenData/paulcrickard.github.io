@@ -1,0 +1,75 @@
+<html><head><title>CitySDK</title>
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<script src="http://cdn-geoweb.s3.amazonaws.com/esri-leaflet/1.0.0-rc.5/esri-leaflet.js"></script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+
+<style>
+
+html, body,  #map {
+        width : 100%;
+        height : 100%;
+     		   }
+
+</style>
+
+<script src="http://cdn-geoweb.s3.amazonaws.com/esri-leaflet-renderers/v0.0.1-beta.2/esri-leaflet-renderers.js"></script>
+<script src="citysdk.js"></script>
+<script src="citysdk.census.js"></script>
+
+</head>
+<body>
+
+
+<div id="map">
+</div><script>
+
+
+var apiKey = prompt("Please enter your Census API key", "API Key");
+        var sdk = new CitySDK();
+        var census = sdk.modules.census;
+        census.enable(apiKey);
+
+
+var map = L.map('map', {center: [35,-106],zoom:8});
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+
+
+
+
+
+map.on("click",function(e){
+   
+
+var t=L.marker(e.latlng);
+var j=t.toGeoJSON();
+
+var request = {
+                            "lat": j.geometry.coordinates[1],
+                            "lng": j.geometry.coordinates[0],
+                            "level": "tract",
+                            "variables": ["B06011_003E","population"] //median income last 6 months
+                        };
+
+census.APIRequest(request, callback);
+
+
+
+});
+
+var callback=function(response){
+
+	console.log(response);
+	alert("Population: "+response.data.population+"   Median Income Last 12 Months: "+response.data.B06011_003E);
+};
+
+
+
+
+//https://github.com/uscensusbureau/citysdk/blob/master/js/citysdk.census.js For shortcut to common variable names
+
+//http://api.census.gov/data/2013/acs5/variables.json  ACS 5 year variable names
+
+
+</script>
+</body></html>
